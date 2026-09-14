@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Squadar — Style Guide</title>
+<style>
+  :root {
+    --primary:#1F3A5F; --secondary:#0F6F6C;
+    --background:#F7F8FA; --surface:#FFFFFF; --text:#14181F; --text-muted:#525C6B;
+    --border:#D3D8E0; --error:#B3261E; --success:#1B6B3A;
+    --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px;
+    --space-6:32px; --space-7:48px; --space-8:64px; --space-9:96px;
+    --font:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono:ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --radius:4px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --primary:#9FBAD9; --secondary:#4FC4BE; --background:#11151B; --surface:#1A2029;
+      --text:#EDF0F4; --text-muted:#A6B0BE; --border:#333C49; --error:#F2B8B4; --success:#7FD6A0;
+    }
+  }
+  :root[data-theme="dark"] {
+    --primary:#9FBAD9; --secondary:#4FC4BE; --background:#11151B; --surface:#1A2029;
+    --text:#EDF0F4; --text-muted:#A6B0BE; --border:#333C49; --error:#F2B8B4; --success:#7FD6A0;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; padding-block:var(--space-7); padding-inline:var(--space-4);
+    background:var(--background); color:var(--text);
+    font-family:var(--font); font-size:16px; line-height:1.6;
+  }
+  .wrap { max-width:1000px; margin:0 auto; }
+  h1,h2,h3 { font-weight:600; line-height:1.25; margin:0 0 var(--space-3); }
+  h1 { font-size:2.441rem; line-height:1.2; }
+  h2 { font-size:1.563rem; margin-top:var(--space-8); padding-bottom:var(--space-2);
+       border-bottom:1px solid var(--border); }
+  h3 { font-size:1.25rem; line-height:1.4; margin-top:var(--space-6); }
+  p { margin:0 0 var(--space-4); max-width:72ch; }
+  .muted { color:var(--text-muted); font-size:0.875rem; }
+  .card { background:var(--surface); border:1px solid var(--border);
+          border-radius:var(--radius); padding:var(--space-5); }
+  a { color:var(--secondary); text-decoration:underline; text-underline-offset:2px; }
+  a:hover { text-decoration-thickness:2px; }
+  code { font-family:var(--mono); font-size:0.875em; }
+
+  /* Focus — one rule, everywhere */
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+  textarea:focus-visible, [tabindex]:focus-visible {
+    outline:2px solid var(--secondary); outline-offset:2px; border-radius:2px;
+  }
+
+  /* Header */
+  .brand { display:flex; align-items:center; gap:var(--space-4); margin-bottom:var(--space-6); }
+  .brand svg { flex:none; }
+  .wordmark { font-size:1.953rem; font-weight:600; letter-spacing:-0.01em; }
+  .toggle { margin-left:auto; }
+
+  /* Swatches */
+  .swatches { display:grid; gap:var(--space-4);
+    grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); list-style:none; padding:0; margin:0; }
+  .swatch { border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;
+            background:var(--surface); }
+  .chip { height:72px; }
+  .swatch .meta { padding:var(--space-3); }
+  .swatch .name { font-weight:600; font-size:0.875rem; }
+  .swatch .hex { font-family:var(--mono); font-size:0.8rem; color:var(--text-muted); }
+
+  /* Type scale */
+  .type-row { display:flex; align-items:baseline; gap:var(--space-4); flex-wrap:wrap;
+              padding:var(--space-3) 0; border-bottom:1px solid var(--border); }
+  .type-row .label { flex:0 0 200px; font-size:0.8rem; font-weight:500; color:var(--text-muted);
+                     font-family:var(--mono); }
+
+  /* Spacing scale */
+  .space-row { display:flex; align-items:center; gap:var(--space-4); padding:var(--space-2) 0; }
+  .space-row .label { flex:0 0 140px; font-family:var(--mono); font-size:0.8rem; color:var(--text-muted); }
+  .bar { height:16px; background:var(--secondary); border-radius:2px; }
+
+  /* Buttons */
+  .btn { font:inherit; font-weight:600; font-size:1rem; min-height:44px; padding:0 var(--space-5);
+         border-radius:var(--radius); border:1px solid transparent; cursor:pointer;
+         display:inline-flex; align-items:center; gap:var(--space-2); }
+  .btn-primary { background:var(--secondary); color:var(--surface); }
+  .btn-primary:hover { background:var(--primary); }
+  .btn-secondary { background:var(--surface); color:var(--text); border-color:var(--border); }
+  .btn-secondary:hover { border-color:var(--text); }
+  .btn-destructive { background:var(--error); color:var(--surface); }
+  :root[data-theme="dark"] .btn-destructive, 
+  :root:not([data-theme="light"]) .btn-destructive { color:#11151B; }
+  .btn-destructive:hover { filter:brightness(0.9); }
+  .btn:disabled { opacity:0.5; cursor:default; }
+  .btn-row { display:flex; gap:var(--space-3); flex-wrap:wrap; align-items:center; }
+
+  /* Inputs */
+  .field { margin-bottom:var(--space-5); max-width:360px; }
+  .field label { display:block; font-size:0.875rem; font-weight:500; margin-bottom:var(--space-2); }
+  .field .req { color:var(--text-muted); font-weight:400; }
+  .field input, .field select {
+    font:inherit; font-size:16px; width:100%; min-height:44px; padding:0 var(--space-3);
+    background:var(--surface); color:var(--text);
+    border:1px solid var(--border); border-radius:var(--radius);
+  }
+  .field input:hover, .field select:hover { border-color:var(--text-muted); }
+  .help { font-size:0.875rem; color:var(--text-muted); margin-top:var(--space-2); }
+  .field.is-error input { border-color:var(--error); border-width:2px; }
+  .msg-error { color:var(--error); font-size:0.875rem; margin-top:var(--space-2);
+               display:flex; gap:var(--space-2); align-items:flex-start; font-weight:500; }
+  .msg-success { color:var(--success); font-size:0.875rem; margin-top:var(--space-2);
+                 display:flex; gap:var(--space-2); align-items:flex-start; font-weight:500; }
+  .summary { border:2px solid var(--error); border-radius:var(--radius);
+             padding:var(--space-4); margin-bottom:var(--space-5); max-width:520px; }
+  .summary h3 { margin:0 0 var(--space-2); font-size:1rem; color:var(--error); }
+  .summary ul { margin:0; padding-left:var(--space-5); font-size:0.875rem; }
+
+  table { border-collapse:collapse; width:100%; font-size:0.875rem; }
+  th, td { text-align:left; padding:var(--space-2) var(--space-3); border-bottom:1px solid var(--border); }
+  th { font-weight:600; color:var(--text-muted); font-size:0.8rem; }
+  td.score { font-family:var(--mono); text-align:right; }
+
+  .provisional { display:inline-block; font-size:0.75rem; font-weight:600; letter-spacing:0.04em;
+    text-transform:uppercase; color:var(--surface); background:var(--primary);
+    padding:2px var(--space-2); border-radius:2px; vertical-align:middle; }
+  :root[data-theme="dark"] .provisional { color:#11151B; }
+
+  .skip { position:absolute; left:-9999px; }
+  .skip:focus { left:var(--space-4); top:var(--space-4); position:fixed; background:var(--surface);
+                padding:var(--space-3); border:2px solid var(--secondary); border-radius:var(--radius); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+
+  <header class="brand">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="56" height="56" role="img" aria-label="Squadar logo">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linejoin="round"/>
+      <polygon points="32,19 43.2,25.5 43.2,38.5 32,45 20.8,38.5 20.8,25.5" fill="none" stroke="var(--primary)" stroke-width="1.25" stroke-linejoin="round" opacity="0.35"/>
+      <polygon points="32,11 50,21.5 45,42 32,50 15,38 15,23" fill="var(--secondary)" fill-opacity="0.22" stroke="var(--secondary)" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="32" cy="11" r="2.6" fill="var(--secondary)"/><circle cx="50" cy="21.5" r="2.6" fill="var(--secondary)"/>
+      <circle cx="45" cy="42" r="2.6" fill="var(--secondary)"/><circle cx="32" cy="50" r="2.6" fill="var(--secondary)"/>
+      <circle cx="15" cy="38" r="2.6" fill="var(--secondary)"/><circle cx="15" cy="23" r="2.6" fill="var(--secondary)"/>
+      <circle cx="32" cy="32" r="2" fill="var(--primary)"/>
+    </svg>
+    <span class="wordmark">Squadar</span>
+    <button class="btn btn-secondary toggle" type="button" id="theme">Dark mode</button>
+  </header>
+
+  <main id="main">
+  <h1>Style Guide</h1>
+  <p>The reference implementation of <code>DESIGN.md</code>. Every token, scale and component state
+  below is live code — if a design decision changes, it changes here in the same commit.</p>
+
+  <h2>Logo</h2>
+  <div class="card">
+    <div style="display:flex; align-items:flex-end; gap:var(--space-6); flex-wrap:wrap;">
+      <figure style="margin:0; text-align:center;">
+        <svg viewBox="0 0 64 64" width="96" height="96" role="img" aria-label="Squadar mark at 96 pixels">
+          <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linejoin="round"/>
+          <polygon points="32,19 43.2,25.5 43.2,38.5 32,45 20.8,38.5 20.8,25.5" fill="none" stroke="var(--primary)" stroke-width="1.25" stroke-linejoin="round" opacity="0.35"/>
+          <polygon points="32,11 50,21.5 45,42 32,50 15,38 15,23" fill="var(--secondary)" fill-opacity="0.22" stroke="var(--secondary)" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="32" cy="11" r="2.6" fill="var(--secondary)"/><circle cx="50" cy="21.5" r="2.6" fill="var(--secondary)"/>
+          <circle cx="45" cy="42" r="2.6" fill="var(--secondary)"/><circle cx="32" cy="50" r="2.6" fill="var(--secondary)"/>
+          <circle cx="15" cy="38" r="2.6" fill="var(--secondary)"/><circle cx="15" cy="23" r="2.6" fill="var(--secondary)"/>
+          <circle cx="32" cy="32" r="2" fill="var(--primary)"/>
+        </svg>
+        <figcaption class="muted">96 px — full mark</figcaption>
+      </figure>
+      <figure style="margin:0; text-align:center;">
+        <svg viewBox="0 0 64 64" width="48" height="48" role="img" aria-label="Squadar mark at 48 pixels">
+          <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linejoin="round"/>
+          <polygon points="32,19 43.2,25.5 43.2,38.5 32,45 20.8,38.5 20.8,25.5" fill="none" stroke="var(--primary)" stroke-width="1.25" stroke-linejoin="round" opacity="0.35"/>
+          <polygon points="32,11 50,21.5 45,42 32,50 15,38 15,23" fill="var(--secondary)" fill-opacity="0.22" stroke="var(--secondary)" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="32" cy="11" r="2.6" fill="var(--secondary)"/><circle cx="50" cy="21.5" r="2.6" fill="var(--secondary)"/>
+          <circle cx="45" cy="42" r="2.6" fill="var(--secondary)"/><circle cx="32" cy="50" r="2.6" fill="var(--secondary)"/>
+          <circle cx="15" cy="38" r="2.6" fill="var(--secondary)"/><circle cx="15" cy="23" r="2.6" fill="var(--secondary)"/>
+          <circle cx="32" cy="32" r="2" fill="var(--primary)"/>
+        </svg>
+        <figcaption class="muted">48 px — full mark</figcaption>
+      </figure>
+      <figure style="margin:0; text-align:center;">
+        <svg viewBox="0 0 64 64" width="24" height="24" role="img" aria-label="Squadar mark at 24 pixels, simplified">
+          <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="var(--primary)" stroke-width="3.5" stroke-linejoin="round"/>
+          <polygon points="32,11 50,21.5 45,42 32,50 15,38 15,23" fill="var(--secondary)" fill-opacity="0.22" stroke="var(--secondary)" stroke-width="3.5" stroke-linejoin="round"/>
+          <circle cx="32" cy="32" r="2.5" fill="var(--primary)"/>
+        </svg>
+        <figcaption class="muted">24 px — minimum,<br>simplified</figcaption>
+      </figure>
+    </div>
+    <p class="muted" style="margin-top:var(--space-5); margin-bottom:0;">
+      A six-axis radar grid with one assessed skill profile plotted on it. Clear space: 25% of the
+      mark's width on all sides. Do not recolor, rotate, stretch, or add effects.</p>
+  </div>
+
+  <h2>Color</h2>
+  <p class="muted">Swatches read from the live tokens — toggle dark mode above to see both sets.
+  Hex values shown are the light-mode definitions.</p>
+  <ul class="swatches">
+    <li class="swatch"><div class="chip" style="background:var(--primary)"></div>
+      <div class="meta"><div class="name">primary</div><div class="hex">#1F3A5F / #9FBAD9</div></div></li>
+    <li class="swatch"><div class="chip" style="background:var(--secondary)"></div>
+      <div class="meta"><div class="name">secondary</div><div class="hex">#0F6F6C / #4FC4BE</div></div></li>
+    <li class="swatch"><div class="chip" style="background:var(--background)"></div>
+      <div class="meta"><div class="name">background</div><div class="hex">#F7F8FA / #11151B</div></div></li>
+    <li class="swatch"><div class="chip" style="background:var(--surface)"></div>
+      <div class="meta"><div class="name">surface</div><div class="hex">#FFFFFF / #1A2029</div></div></li>
+    <li class="swatch"><div class="chip" style="background:var(--text)"></div>
+      <div class="meta"><div class="name">text</div><div class="hex">#14181F / #EDF0F4</div></div></li>
+    <li class="swatch"><div class="chip" style="background:var(--text-muted)"></div>
+      <div class="meta"><div class="name">text-muted</div><div class="hex">#525C6B / #A6B0BE</div></div></li>
+    <li class="swatch"><div class="chip" style="background:var(--border)"></div>
+      <div class="meta"><div class="name">border</div><div class="hex">#D3D8E0 / #333C49</div></div></li>
+    <li class="swatch"><div class="chip" style="background:var(--error)"></div>
+      <div class="meta"><div class="name">error</div><div class="hex">#B3261E / #F2B8B4</div></div></li>
+    <li class="swatch"><div class="chip" style="background:var(--success)"></div>
+      <div class="meta"><div class="name">success</div><div class="hex">#1B6B3A / #7FD6A0</div></div></li>
+  </ul>
+
+  <h3>Contrast of stated pairings (light mode)</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>Pairing</th><th>Ratio</th><th>WCAG 2.2 AA</th></tr></thead>
+      <tbody>
+        <tr><td>text on background</td><td class="score">16.8:1</td><td>Pass</td></tr>
+        <tr><td>text on surface</td><td class="score">17.8:1</td><td>Pass</td></tr>
+        <tr><td>text-muted on surface</td><td class="score">6.8:1</td><td>Pass</td></tr>
+        <tr><td>secondary on surface</td><td class="score">6.0:1</td><td>Pass</td></tr>
+        <tr><td>primary on surface</td><td class="score">11.5:1</td><td>Pass</td></tr>
+        <tr><td>surface on secondary (button)</td><td class="score">6.0:1</td><td>Pass</td></tr>
+        <tr><td>error on surface</td><td class="score">6.5:1</td><td>Pass</td></tr>
+        <tr><td>success on surface</td><td class="score">6.5:1</td><td>Pass</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Typography <span class="provisional">Provisional</span></h2>
+  <p>The broader typography direction is <strong>TO BE DECIDED</strong> in <code>DESIGN.md</code>.
+  The system UI stack rendered here is the provisional default: no network request, no license, native
+  hinting on every platform. Scores are set in a monospace face so digits align in columns.</p>
+  <div class="card">
+    <div class="type-row"><span class="label">Display · 39px · 600</span>
+      <span style="font-size:2.441rem; font-weight:600; line-height:1.2;">Team skill profile</span></div>
+    <div class="type-row"><span class="label">H1 · 31px · 600</span>
+      <span style="font-size:1.953rem; font-weight:600;">Team skill profile</span></div>
+    <div class="type-row"><span class="label">H2 · 25px · 600</span>
+      <span style="font-size:1.563rem; font-weight:600;">Team skill profile</span></div>
+    <div class="type-row"><span class="label">H3 · 20px · 600</span>
+      <span style="font-size:1.25rem; font-weight:600;">Team skill profile</span></div>
+    <div class="type-row"><span class="label">Body · 16px · 400</span>
+      <span style="font-size:1rem;">Select up to six team members to compare.</span></div>
+    <div class="type-row"><span class="label">Small · 14px · 400</span>
+      <span style="font-size:0.875rem;">Scores are whole numbers from 1 to 10.</span></div>
+    <div class="type-row"><span class="label">Caption · 12.8px · 500</span>
+      <span style="font-size:0.8rem; font-weight:500;">Assessed 14 Sep 2026 · exam</span></div>
+    <div class="type-row" style="border-bottom:none;"><span class="label">Score · mono · 400</span>
+      <span style="font-family:var(--mono);">1 2 3 4 5 6 7 8 9 10</span></div>
+  </div>
+
+  <h2>Spacing</h2>
+  <p class="muted">4 px base. Padding, margin and gap use only these values.</p>
+  <div class="card">
+    <div class="space-row"><span class="label">space-1 · 4px</span><span class="bar" style="width:4px"></span></div>
+    <div class="space-row"><span class="label">space-2 · 8px</span><span class="bar" style="width:8px"></span></div>
+    <div class="space-row"><span class="label">space-3 · 12px</span><span class="bar" style="width:12px"></span></div>
+    <div class="space-row"><span class="label">space-4 · 16px</span><span class="bar" style="width:16px"></span></div>
+    <div class="space-row"><span class="label">space-5 · 24px</span><span class="bar" style="width:24px"></span></div>
+    <div class="space-row"><span class="label">space-6 · 32px</span><span class="bar" style="width:32px"></span></div>
+    <div class="space-row"><span class="label">space-7 · 48px</span><span class="bar" style="width:48px"></span></div>
+    <div class="space-row"><span class="label">space-8 · 64px</span><span class="bar" style="width:64px"></span></div>
+    <div class="space-row"><span class="label">space-9 · 96px</span><span class="bar" style="width:96px"></span></div>
+  </div>
+
+  <h2>Components</h2>
+  <p class="muted">Hover each control, then press <kbd>Tab</kbd> through them to see the focus ring.</p>
+
+  <h3>Buttons</h3>
+  <div class="card">
+    <div class="btn-row">
+      <button class="btn btn-primary" type="button">Save team</button>
+      <button class="btn btn-secondary" type="button">Cancel</button>
+      <button class="btn btn-destructive" type="button">Delete member</button>
+      <button class="btn btn-primary" type="button" disabled aria-describedby="why-disabled">Submit exam</button>
+    </div>
+    <p id="why-disabled" class="help">Submit exam is unavailable until every question is answered —
+    the reason is stated in text, never signalled by the disabled state alone.</p>
+  </div>
+
+  <h3>Inputs and links</h3>
+  <div class="card">
+    <div class="field">
+      <label for="skill">Skill</label>
+      <select id="skill">
+        <option>Threat modeling</option><option>Secure code review</option><option>Incident response</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="score">Score <span class="req">(required)</span></label>
+      <input id="score" type="text" inputmode="numeric" value="7" aria-describedby="score-help">
+      <p class="help" id="score-help">A whole number from 1 to 10. Higher is stronger.</p>
+    </div>
+    <p>See the <a href="#main">skill catalog</a> to add a skill. Links are underlined in prose and
+    stay underlined on hover.</p>
+  </div>
+
+  <h3>Form feedback</h3>
+  <div class="card">
+    <div class="summary" role="group" aria-labelledby="err-title">
+      <h3 id="err-title">There is 1 problem with this form</h3>
+      <ul><li><a href="#score-bad">Score must be a whole number from 1 to 10</a></li></ul>
+    </div>
+    <div class="field is-error">
+      <label for="score-bad">Score <span class="req">(required)</span></label>
+      <input id="score-bad" type="text" inputmode="numeric" value="12" aria-invalid="true" aria-describedby="score-err">
+      <p class="msg-error" id="score-err"><span aria-hidden="true">✕</span>
+        <span>Score must be a whole number from 1 to 10. Enter 10 for the highest rating.</span></p>
+    </div>
+    <div class="field">
+      <label for="score-ok">Score</label>
+      <input id="score-ok" type="text" inputmode="numeric" value="8" aria-describedby="score-ok-msg">
+      <p class="msg-success" id="score-ok-msg"><span aria-hidden="true">✓</span>
+        <span>Saved. Aisha's Threat modeling score is now 8.</span></p>
+    </div>
+    <p class="help" style="max-width:72ch;">Errors show border, symbol and text together — never color
+    alone. On submit failure, focus moves to the first invalid field.</p>
+  </div>
+
+  <h3>Score table</h3>
+  <div class="card" style="overflow-x:auto;">
+    <table>
+      <caption class="muted" style="text-align:left; padding-bottom:var(--space-3);">
+        The tabular equivalent of the radar chart — the accessible route to the same data.</caption>
+      <thead><tr><th>Team member</th><th>Skill</th><th>Method</th><th style="text-align:right">Score</th></tr></thead>
+      <tbody>
+        <tr><td>Aisha Rahman</td><td>Threat modeling</td><td>Exam</td><td class="score">8</td></tr>
+        <tr><td>Ben Okafor</td><td>Threat modeling</td><td>Assessor rating</td><td class="score">6</td></tr>
+        <tr><td>Chen Wei</td><td>Threat modeling</td><td>Self-assessment</td><td class="score">9</td></tr>
+        <tr><td>Dana Silva</td><td>Threat modeling</td><td>—</td><td class="score">Not assessed</td></tr>
+      </tbody>
+    </table>
+  </div>
+  </main>
+
+  <p class="muted" style="margin-top:var(--space-8);">Squadar — reference implementation of
+  <code>DESIGN.md</code>.</p>
+</div>
+
+<script>
+  var btn = document.getElementById('theme');
+  btn.addEventListener('click', function () {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+    btn.textContent = dark ? 'Dark mode' : 'Light mode';
+  });
+</script>
+</body>
+</html>

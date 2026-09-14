@@ -1,0 +1,68 @@
+{
+  "$schema": "https://raw.githubusercontent.com/CycloneDX/specification/2.0-dev-threatmodeling/schema/2.0/model/cyclonedx-blueprint-2.0.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "2.0",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-09-14T00:00:00Z",
+    "component": { "type": "application", "name": "Squadar", "version": "0.0.0-specification-only" },
+    "properties": [
+      { "name": "stage", "value": "06 Document and Architecture Absorption" },
+      { "name": "documentsProcessed", "value": "REQUIREMENTS.md, ARCHITECTURE.md, SECURITY.md, DESIGN.md, style-guide.html, REQUIREMENT_TEMPLATE.md, CLAUDE.md, AGENTS.md, .claude/*" },
+      { "name": "priorThreatModel", "value": "None. SECURITY.md records threat model status TO BE COMPLETED." }
+    ]
+  },
+  "modelTypes": ["architecture", "dataFlow", "threat"],
+  "methodologies": ["Document Analysis"],
+
+  "requirements": [
+    { "bom-ref": "req-authn", "id": "FR-1.1", "statement": "Authenticate before displaying any team member, score, exam or chart data.", "control": "SEC-AUTHN-1", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-roles", "id": "FR-1.2", "statement": "Exactly one role per user: Administrator, Assessor, Team Member, Viewer.", "control": "SEC-AUTHZ-2", "status": "Claimed — Not Verified", "conflict": "C-3" },
+    { "bom-ref": "req-adminonly", "id": "FR-1.3", "statement": "Only an Administrator may create, modify or deactivate accounts and role assignments.", "control": "SEC-AUTHZ-6", "status": "Claimed — Not Verified", "conflict": "C-5" },
+    { "bom-ref": "req-peer", "id": "FR-1.4", "statement": "A Team Member may not view another individual's scores except as part of a radar chart for a team they belong to.", "control": "SEC-AUTHZ-3", "status": "Claimed — Not Verified", "conflict": "C-2" },
+    { "bom-ref": "req-assessorscope", "id": "FR-1.5", "statement": "An Assessor may record scores only for assigned teams.", "control": "SEC-AUTHZ-4", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-viewer", "id": "FR-1.6", "statement": "A Viewer may not create or modify any record.", "control": "SEC-AUTHZ-5", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-denial", "id": "FR-1.7", "statement": "Refusals must not disclose the withheld data.", "control": "SEC-AUTHZ-7, SEC-ERR-1", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-range", "id": "FR-4.2/FR-4.3", "statement": "Scores are integers 1-10; invalid scores are rejected, not coerced.", "control": "SEC-INPUT-2", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-examassign", "id": "FR-5.6", "statement": "A Team Member may attempt only an assigned exam.", "control": "SEC-AUTHZ-8", "status": "Claimed — Not Verified", "conflict": "C-8" },
+    { "bom-ref": "req-serverscore", "id": "FR-5.7", "statement": "Exam scoring and 1-10 band conversion are computed from the stored answer key.", "control": "SEC-BIZ-1", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-limits", "id": "FR-7.6/FR-7.7", "statement": "3-12 skill axes, at least 6 members, limits reported when exceeded.", "control": "SEC-HTTP-6", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-import", "id": "FR-8.2", "statement": "Bulk import validates per row and reports rejections with reasons.", "control": "SEC-INPUT-4, SEC-INPUT-5", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-export", "id": "FR-8.3", "statement": "A team member exports their own complete record.", "control": "SEC-DATA-2", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-delete", "id": "FR-8.4", "statement": "Administrator deletion removes a member and their scores from every surface.", "control": "SEC-DATA-3", "status": "Claimed — Not Verified", "conflict": "C-4" },
+    { "bom-ref": "req-audit", "id": "NFR-9.6", "statement": "Audit entry for every score create, change or delete, Administrator-retrievable.", "control": "SEC-LOG-1, SEC-LOG-4", "status": "Claimed — Not Verified", "conflict": "C-4" },
+    { "bom-ref": "req-answerkey", "id": "NFR-9.7", "statement": "Answer keys are never retrievable by a Team Member or Viewer.", "control": "SEC-BOUND-3, SEC-RENDER-4, DR-8", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-a11y", "id": "NFR-9.4/NFR-9.5, DESIGN.md", "statement": "WCAG 2.2 AA; chart series distinguishable without color; keyboard operable.", "control": "DESIGN.md", "status": "Claimed — Not Verified" },
+    { "bom-ref": "req-testdata", "id": "UT-10.1 + SEC-DATA-5", "statement": "Ten fake users for build-step testing must be synthetic.", "control": "SEC-DATA-5", "status": "Claimed — Not Verified" }
+  ],
+
+  "conflicts": [
+    { "bom-ref": "C-1", "name": "Regulatory scope self-contradictory", "sources": ["REQUIREMENTS.md: no regulated data stored", "security notes: GDPR and CCPA apply"], "selfIdentified": true, "trackedAs": "SQ-1", "severity": "high", "blocks": ["SEC-DATA-6 retention periods", "data-subject rights beyond FR-8.3/FR-8.4", "breach notification duties"] },
+    { "bom-ref": "C-2", "name": "Radar chart contradicts Team Member confidentiality", "sources": ["FR-1.4", "FR-7.3", "FR-6.2", "DR-7", "SEC-AUTHZ-3"], "selfIdentified": false, "trackedAs": "OQ-1 (partially)", "severity": "high", "detail": "FR-7.3 requires per-member attribution and FR-6.2 requires the same data as a table from one dataset (DR-7), so the chart is not an aggregate. The FR-1.4 carve-out becomes the general case and the peer confidentiality boundary is undefined." },
+    { "bom-ref": "C-3", "name": "Single-role model versus ABAC", "sources": ["FR-1.2", "security notes ABAC"], "selfIdentified": true, "trackedAs": "SQ-2", "severity": "medium" },
+    { "bom-ref": "C-4", "name": "Deletion versus immutable audit trail", "sources": ["FR-8.4", "NFR-9.6", "SEC-LOG-4", "SEC-DATA-3"], "selfIdentified": true, "trackedAs": "SQ-6", "severity": "medium" },
+    { "bom-ref": "C-5", "name": "OIDC provider may assert role", "sources": ["FR-1.3", "undefined OIDC claim handling"], "selfIdentified": true, "trackedAs": "SQ-10", "severity": "high" },
+    { "bom-ref": "C-6", "name": "Session transport undecided leaves CSRF posture undecided", "sources": ["SEC-SESSION-4", "SEC-HTTP-3 CONDITIONAL"], "selfIdentified": true, "trackedAs": "SQ-5", "severity": "medium" },
+    { "bom-ref": "C-7", "name": "Self-assessment can raise a member's own charted score", "sources": ["FR-5.2", "FR-4.6", "FR-5.10", "FR-5.11"], "selfIdentified": false, "trackedAs": "OQ-3", "severity": "medium", "detail": "Read literally the specification lets a Team Member set their own displayed skill level; FR-5.11 requires the method be distinguishable only in the score detail view, not on the chart." },
+    { "bom-ref": "C-8", "name": "Answer-key confidentiality does not prevent collusion", "sources": ["NFR-9.7", "SEC-AUTHZ-8", "ARCHITECTURE.md attempt policy UNKNOWN"], "selfIdentified": true, "trackedAs": "SQ-11", "severity": "medium" }
+  ],
+
+  "documentationGaps": [
+    "No API specification (OpenAPI/GraphQL/protobuf) — entry points derived from requirements only",
+    "No data model or schema — field sensitivity inferred",
+    "No authorization matrix — the central control exists only as prose",
+    "No architecture diagram — stage 08 diagrams are synthesized, not absorbed",
+    "No incident response plan (SQ-12)",
+    "No prior threat model to diff against",
+    "No cloud provider, CI system or runtime topology (SQ-8)",
+    "No ASVS target verification level (SQ-3)",
+    "No chart rendering library decision, deferring the most XSS-relevant DEP-* review",
+    "No abuse or resource limits (SQ-9)"
+  ],
+
+  "assumptions": [
+    "All documents are current: none is dated, all were modified on the same day as the latest commits.",
+    "SECURITY.md's CONFIRMED/PROVISIONAL labels describe provenance, not implementation status; all 48 rules are recorded as Claimed — Not Verified.",
+    "The security notes referenced by SECURITY.md are not present in the repository; their content is known only through SECURITY.md's restatement of it."
+  ]
+}

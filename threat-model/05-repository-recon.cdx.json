@@ -1,0 +1,95 @@
+{
+  "$schema": "https://raw.githubusercontent.com/CycloneDX/specification/2.0-dev-threatmodeling/schema/2.0/model/cyclonedx-blueprint-2.0.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "2.0",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-09-14T00:00:00Z",
+    "component": { "type": "application", "name": "Squadar", "version": "0.0.0-specification-only" },
+    "properties": [
+      { "name": "stage", "value": "05 Repository Threat Reconnaissance" },
+      { "name": "repository", "value": "squadar" },
+      { "name": "commit", "value": "6441881" },
+      { "name": "implementationStatus", "value": "No application code exists. All findings are design-stage." }
+    ]
+  },
+  "modelTypes": ["architecture", "dataFlow", "threat"],
+  "methodologies": ["Automated Repository Analysis"],
+
+  "assets": [
+    { "bom-ref": "asset-web", "name": "Web Client", "type": "application", "technology": "React.js", "version": "UNKNOWN", "trustLevel": "untrusted", "source": "05", "evidence": "ARCHITECTURE.md; no code present" },
+    { "bom-ref": "asset-mobile", "name": "Mobile Client", "type": "application", "technology": "React Native", "version": "UNKNOWN", "trustLevel": "untrusted", "source": "05", "evidence": "ARCHITECTURE.md; no code present" },
+    { "bom-ref": "asset-api", "name": "REST API", "type": "service", "technology": "Node.js", "version": "UNKNOWN", "trustLevel": "trusted", "source": "05", "evidence": "ARCHITECTURE.md; sole enforcement point (DR-1, SEC-BOUND-1)" },
+    { "bom-ref": "asset-iam", "name": "Identity & Access", "type": "service", "technology": "passkey/WebAuthn + password + OIDC, JWT sessions", "trustLevel": "trusted", "source": "05" },
+    { "bom-ref": "asset-roster", "name": "Roster", "type": "service", "trustLevel": "trusted", "source": "05" },
+    { "bom-ref": "asset-catalog", "name": "Skill Catalog", "type": "service", "trustLevel": "trusted", "source": "05" },
+    { "bom-ref": "asset-assessment", "name": "Assessment", "type": "service", "trustLevel": "trusted", "source": "05", "evidence": "Owns scores, history, exams, answer keys, attempts, audit entries" },
+    { "bom-ref": "asset-chart", "name": "Chart Data Service", "type": "service", "trustLevel": "trusted", "source": "05", "evidence": "A responsibility within the API, not necessarily a separate deployable" },
+    { "bom-ref": "asset-import", "name": "Bulk Import / Export", "type": "service", "trustLevel": "trusted", "source": "05" },
+    { "bom-ref": "asset-notify", "name": "Outbound Notification", "type": "service", "trustLevel": "trusted", "source": "05" },
+    { "bom-ref": "asset-db", "name": "Relational Data Store", "type": "datastore", "technology": "Relational, 3NF, product TO BE DECIDED", "trustLevel": "trusted", "source": "05" },
+    { "bom-ref": "asset-blob", "name": "Protected Asset Store", "type": "datastore", "technology": "TO BE DECIDED", "trustLevel": "trusted", "source": "05" },
+    { "bom-ref": "asset-oidc", "name": "OIDC Identity Provider", "type": "external-service", "technology": "UNKNOWN", "trustLevel": "external", "source": "05" },
+    { "bom-ref": "asset-mail", "name": "Transactional Mail Provider", "type": "external-service", "technology": "TO BE DECIDED", "trustLevel": "external", "source": "05" },
+    { "bom-ref": "asset-iac", "name": "Terraform Infrastructure", "type": "infrastructure", "technology": "Terraform", "trustLevel": "trusted", "source": "05", "evidence": "No .tf file exists; cloud provider UNKNOWN (SQ-8)" },
+    { "bom-ref": "asset-devtooling", "name": "Claude Code Enforcement Layer", "type": "tooling", "technology": ".claude hooks, agents, settings", "trustLevel": "development", "source": "05", "evidence": "The only controls actually present in the repository today" }
+  ],
+
+  "actors": [
+    { "bom-ref": "actor-admin", "name": "Administrator", "type": "human", "trustLevel": "privileged", "capabilities": ["account and role CRUD", "skill catalog CRUD", "team member CRUD", "exam definition and answer keys", "bulk import", "personal-data deletion", "audit trail read"] },
+    { "bom-ref": "actor-assessor", "name": "Assessor", "type": "human", "trustLevel": "authenticated", "capabilities": ["record scores for assigned teams", "assign exams", "view team charts"] },
+    { "bom-ref": "actor-member", "name": "Team Member", "type": "human", "trustLevel": "authenticated", "capabilities": ["take assigned exams", "view own scores", "self-assess", "export own record"] },
+    { "bom-ref": "actor-viewer", "name": "Viewer", "type": "human", "trustLevel": "authenticated", "capabilities": ["read-only view of teams, scores and charts"] },
+    { "bom-ref": "actor-oidc", "name": "OIDC Provider", "type": "service", "trustLevel": "external" },
+    { "bom-ref": "actor-mail", "name": "Mail Provider", "type": "service", "trustLevel": "external" }
+  ],
+
+  "dataSets": [
+    { "bom-ref": "data-credentials", "name": "Credentials and passkey material", "classification": "secret", "owner": "asset-iam" },
+    { "bom-ref": "data-session", "name": "JWT session tokens", "classification": "secret", "owner": "asset-iam" },
+    { "bom-ref": "data-scores", "name": "Skill scores and score history", "classification": "personal-performance-data", "owner": "asset-assessment" },
+    { "bom-ref": "data-attempts", "name": "Exam attempts and results", "classification": "personal-performance-data", "owner": "asset-assessment" },
+    { "bom-ref": "data-answerkeys", "name": "Exam questions and answer keys", "classification": "confidential-system-data", "owner": "asset-assessment", "reference": "NFR-9.7" },
+    { "bom-ref": "data-audit", "name": "Score audit entries", "classification": "personal-performance-data", "owner": "asset-assessment", "reference": "NFR-9.6" },
+    { "bom-ref": "data-roster", "name": "Team member and team records", "classification": "personal-data", "owner": "asset-roster" },
+    { "bom-ref": "data-media", "name": "Exam media assets", "classification": "confidential-system-data", "owner": "asset-blob" }
+  ],
+
+  "zones": [
+    { "bom-ref": "tb-1", "name": "Client to REST API", "description": "Primary and sole enforcement boundary (DR-1, DR-2). Both clients are public, untrusted code.", "controls": ["SEC-BOUND-1", "SEC-BOUND-2", "SEC-AUTHN-1", "SEC-SESSION-1", "SEC-AUTHZ-1", "SEC-INPUT-1", "SEC-HTTP-1"], "controlStatus": "Specified — Not Implemented" },
+    { "bom-ref": "tb-2", "name": "Identity & Access to OIDC provider", "controls": ["SEC-AUTHN-5", "SEC-EXT-1", "SEC-EXT-2"], "controlStatus": "Specified — Not Implemented" },
+    { "bom-ref": "tb-3", "name": "REST API to Protected Asset Store", "controls": ["SEC-BOUND-4", "SEC-DATA-1"], "controlStatus": "Specified — mechanism TO BE DECIDED" },
+    { "bom-ref": "tb-4", "name": "Domain components to Relational Data Store", "controls": ["SEC-INPUT-6", "SEC-DATA-1", "SEC-BIZ-2"], "controlStatus": "Specified — Not Implemented" },
+    { "bom-ref": "tb-5", "name": "Outbound Notification to mail provider", "controls": ["SEC-EXT-1", "SEC-EXT-3", "SEC-AUTHN-8"], "controlStatus": "Specified — Not Implemented" },
+    { "bom-ref": "tb-6", "name": "Bulk Import ingest of Administrator-supplied files", "controls": ["SEC-INPUT-4", "SEC-INPUT-5", "SEC-AUTHZ-4"], "controlStatus": "Specified — Not Implemented" },
+    { "bom-ref": "tb-7", "name": "Developer workstation to repository", "description": "Development boundary, not a product boundary. The only boundary with live controls today.", "controls": [".claude/hooks/protect-files.sh", ".claude/hooks/block-dangerous.sh", ".claude/hooks/audit.sh", "settings.json permissions.deny", "sandbox"], "controlStatus": "Implemented" }
+  ],
+
+  "flows": [
+    { "bom-ref": "flow-auth", "name": "Authenticate", "source": "asset-web", "destination": "asset-iam", "via": "asset-api", "crosses": ["tb-1", "tb-2"], "protocol": "HTTPS", "data": ["data-credentials", "data-session"], "reference": "ARCHITECTURE.md flow 1, FR-1.1" },
+    { "bom-ref": "flow-chart", "name": "Render shared radar chart", "source": "asset-web", "destination": "asset-chart", "via": "asset-api", "crosses": ["tb-1", "tb-4"], "protocol": "HTTPS", "data": ["data-scores", "data-roster"], "reference": "ARCHITECTURE.md flow 2" },
+    { "bom-ref": "flow-exam", "name": "Take and score an exam", "source": "asset-web", "destination": "asset-assessment", "via": "asset-api", "crosses": ["tb-1", "tb-4"], "protocol": "HTTPS", "data": ["data-attempts", "data-answerkeys", "data-scores"], "reference": "ARCHITECTURE.md flow 3, NFR-9.7" },
+    { "bom-ref": "flow-rating", "name": "Record a rating", "source": "asset-web", "destination": "asset-assessment", "via": "asset-api", "crosses": ["tb-1", "tb-4"], "protocol": "HTTPS", "data": ["data-scores", "data-audit"], "reference": "ARCHITECTURE.md flow 4" },
+    { "bom-ref": "flow-admin", "name": "Administer catalog, accounts and roster", "source": "asset-web", "destination": "asset-iam", "via": "asset-api", "crosses": ["tb-1", "tb-4"], "protocol": "HTTPS", "data": ["data-roster"], "reference": "ARCHITECTURE.md flow 5" },
+    { "bom-ref": "flow-import", "name": "Bulk import delimited file", "source": "actor-admin", "destination": "asset-import", "via": "asset-api", "crosses": ["tb-1", "tb-6"], "protocol": "HTTPS multipart", "data": ["data-roster"], "reference": "FR-8.2" },
+    { "bom-ref": "flow-export", "name": "Team member self export", "source": "asset-import", "destination": "actor-member", "via": "asset-api", "crosses": ["tb-1"], "protocol": "HTTPS", "data": ["data-scores", "data-attempts"], "reference": "FR-8.3" },
+    { "bom-ref": "flow-media", "name": "Exam media retrieval", "source": "asset-web", "destination": "asset-blob", "via": "asset-api", "crosses": ["tb-1", "tb-3"], "protocol": "HTTPS", "data": ["data-media"], "reference": "DR-9" },
+    { "bom-ref": "flow-mail", "name": "Exam invitation and account access email", "source": "asset-notify", "destination": "asset-mail", "crosses": ["tb-5"], "protocol": "HTTPS/SMTP", "data": ["data-roster"], "reference": "FR-5.5" }
+  ],
+
+  "threats": [
+    { "bom-ref": "recon-1", "name": "No implementation exists; every specified control is unverified", "severity": "informational", "evidence": "No package.json, no workspace directories, no Terraform, no CI. SECURITY.md states all rules are prospective.", "affects": ["asset-api"] },
+    { "bom-ref": "recon-2", "name": "Test gate is a non-functional placeholder", "severity": "low", "evidence": ".claude/hooks/run-tests.sh is a documented placeholder; CLAUDE.md states no package.json, runner or CI system exists. The 'tests pass before merge' rule is unenforced.", "affects": ["asset-devtooling"] },
+    { "bom-ref": "recon-3", "name": "Terraform state paths are not git-ignored", "severity": "medium", "evidence": ".gitignore covers .env and .claude/logs but not *.tfstate, *.tfstate.* or .terraform/. SEC-CICD-4 forbids committing state. protect-files.sh blocks tool-driven writes only, not a developer working outside Claude Code.", "affects": ["asset-iac"] },
+    { "bom-ref": "recon-4", "name": "Authorization matrix exists only as prose", "severity": "medium", "evidence": "Four roles across ~22 derived entry points are described in FR-1.x and SEC-AUTHZ-1..8 but never expressed as a table, policy or test fixture.", "affects": ["asset-api"] },
+    { "bom-ref": "recon-5", "name": "No dependency policy enforcement exists", "severity": "low", "evidence": "DEP-1..DEP-8 are written; no lockfile, no scanner, no CI to apply them to.", "affects": ["asset-api", "asset-web", "asset-mobile"] }
+  ],
+
+  "assumptions": [
+    "The api/, web/, mobile/, shared/, infra/ monorepo layout in CLAUDE.md is intended structure; none exists.",
+    "Exams carry media, per the ARCHITECTURE.md ASSUMPTION drawn from the 'movie files' note. If not, TB-3 and the Protected Asset Store leave scope.",
+    "The four roles are marked (assumed) at source in REQUIREMENTS.md; OQ-1 may still change FR-1.4.",
+    "Enterprise scale is taken as the stated NFR-9.3 figures: 1,000 team members, 100 skills.",
+    "No AI/ML component exists in the product; MITRE ATLAS and OWASP ML Top 10 are out of scope."
+  ]
+}

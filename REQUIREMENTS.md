@@ -82,7 +82,7 @@ best-guess decisions taken to make the document complete and testable. Revisit t
 - **FR-8.3** A team member MUST be able to export their own complete skill and exam record in a machine-readable format. **(assumed)**
 - **FR-8.4** An Administrator MUST be able to delete a team member's personal data on request, and after deletion the system MUST NOT display that member or their scores in any chart or list. **(assumed)**
 
-### Non-Functional Requirements
+## Non-Functional Requirements
 - **NFR-9.1** A radar chart for the maximum supported selection (FR-7.6, FR-7.7) MUST render within 2 seconds of the selection being confirmed, measured at the 95th percentile. **(assumed)**
 - **NFR-9.2** Exam submissions MUST be scored and the result shown within 5 seconds of submission. **(assumed)**
 - **NFR-9.3** The system MUST support at least 1,000 team members and 100 skills without breaching NFR-9.1. **(assumed)**
@@ -91,9 +91,9 @@ best-guess decisions taken to make the document complete and testable. Revisit t
 - **NFR-9.6** The system MUST record an audit entry for every score created, changed or deleted, capturing who made the change and when, retrievable by an Administrator. **(assumed)**
 - **NFR-9.7** Exam answer keys MUST NOT be retrievable by a Team Member or Viewer at any point, including during or after an exam attempt. **(assumed)**
 
-### Unit Testing
+## Unit Testing
 - **UT-10.1** Build 10 fake users with 10 different skills levels so we can rapidly test the entire system over and over with each build step.
-- 
+
 ## Open Questions
 - **OQ-1** Are the assumed roles correct, and in particular may a Team Member see peers' individual scores outside a shared chart? FR-1.4 currently says no.
 - **OQ-2** Is the assumed exam-to-score conversion (FR-5.7) acceptable, or should exams carry per-question weights, a pass threshold, or a manual review step?

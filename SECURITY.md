@@ -69,9 +69,10 @@ public/partner API, versus an internal contract for the two first-party clients 
 
 ## Selected Security References and Prompt Imports
 
-No secure-coding prompt library was found in the execution environment (`.claude/` in this repository
-contains settings files only; no user- or project-level prompt or rule library exists). No prompt file
-was imported. The public sources below were selected for this stack — authenticated REST API on
+No secure-coding prompt library was found in the execution environment. `.claude/` in this repository
+holds the enforcement layer (settings, agents, commands and hooks), which references the rules below by
+ID and reads this document at runtime; it contains no rule text of its own and none was imported. The
+public sources below were selected for this stack — authenticated REST API on
 Node.js, React and React Native clients, passkeys/password/OIDC, JWT sessions, relational storage,
 Terraform-managed infrastructure, personal performance data.
 

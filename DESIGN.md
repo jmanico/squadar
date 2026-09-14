@@ -6,7 +6,7 @@ file in the same commit.
 
 ## Required Design Inputs
 - Brand personality: professorial, professional, teacher, respectful
-- Primary audience: Administrators (manage the skill catalog, exams and user accounts), Assessors (managers or leads who run assessments and record scores for their team), Team Members (take exams and view their own scores), and Viewers (read-only access to team charts) — per `REQUIREMENTS.md`.
+- Primary audience: the four roles defined in `REQUIREMENTS.md` — Administrator, Assessor, Team Member, Viewer.
 - Platform targets (web / mobile / both): both
 - Light / dark mode: both
 - Existing brand assets: REQUIREMENTS.md only

@@ -23,14 +23,11 @@ not been made. `ASSUMPTION` — an inference not supported by an input source.
 - Data model expectations: RBSMS third normal form, and large assets like movie files go in protected folders (not the DB)
 - Deployment model: teraform
 - Scale expectations: enterprise
-- Security expectations: TO BE DECIDED — addressed in a later security specification, SECURITY.md
+- Security expectations: see `SECURITY.md`, which owns the threat model and all `SEC-*` and `DEP-*` rules
 
 ## Initial Architecture (Provisional)
 
-Both clients are public, untrusted code. Every rule in `REQUIREMENTS.md` — role permissions (FR-1.x),
-score validity (FR-4.2, FR-4.3), exam scoring (FR-5.7), answer-key confidentiality (NFR-9.7), chart
-selection limits (FR-7.6, FR-7.7) — is enforced server-side. The clients render, select and validate
-early for the user's benefit only; a client-side check is never the only check.
+Both clients are public, untrusted code; DR-1 below states what follows from that.
 
 The trust boundary runs between the clients and the REST API. A second boundary runs between the API
 and the identity provider (OIDC). A third runs at the protected asset store, which holds large binary
@@ -45,11 +42,9 @@ attempts and audit entries. No component mutates another's objects; it asks the 
 
 - **Web Client (React.js)**
   - **Responsibility:** Render all screens for the four roles; selection of members and skills; radar
-    chart and its equivalent score table; exam taking; forms. Implements the `DESIGN.md` language:
-    light/dark tokens, 12/8/4-column responsive grid and breakpoints, WCAG 2.2 AA conformance —
-    visible 2 px focus, full keyboard operation, non-color-alone series encoding (line pattern and
-    vertex shape per NFR-9.4), `prefers-reduced-motion`, 200%/320 px reflow, chart text alternative
-    backed by the score table (FR-6.2). Presents client-side validation as a courtesy layer only.
+    chart and its equivalent score table; exam taking; forms. Implements the design language,
+    responsive grid and WCAG 2.2 AA conformance defined in `DESIGN.md`, which is the sole source of
+    those values. Presents client-side validation as a courtesy layer only (DR-1).
   - **Inputs:** User interaction; REST responses; authenticated session credentials.
   - **Outputs:** REST requests; rendered UI.
   - **Data owned or accessed:** Owns no durable data. Holds transient view state (current selection,
@@ -235,7 +230,7 @@ attempts and audit entries. No component mutates another's objects; it asks the 
 | NFR-9.6 (Score audit trail) | Assessment | SUPPORTED |
 | NFR-9.7 (Answer-key confidentiality) | Assessment; REST API | SUPPORTED |
 | `DESIGN.md` WCAG 2.2 AA, themes, responsive grid, chart conventions | Web Client; Mobile Client | SUPPORTED |
-| Security controls | — | TO BE DECIDED — `SECURITY.md` |
+| Security controls | All boundaries and components | SPECIFIED in `SECURITY.md` (`SEC-*`, `DEP-*`); individual rules carry their own status there |
 | OQ-1 … OQ-6 | — | TO BE DECIDED — unresolved product questions in `REQUIREMENTS.md` |
 
 ## Dependency Rules

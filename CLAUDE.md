@@ -1,10 +1,7 @@
 # Squadar
 
-Squadar assesses and measures team members' skills — by exam, assessor rating and self-assessment —
-ranks each skill on a 1–10 scale, and plots multiple members' skills together on a shared radar chart.
-Four roles use it: Administrator, Assessor, Team Member and Viewer. It is specified but not yet built:
-a React.js web client and a React Native mobile client over a shared Node.js REST API, a relational
-store and a protected asset store.
+Squadar is specified but not yet built. What it does and for whom is in `REQUIREMENTS.md`; how it is
+built is in `ARCHITECTURE.md`. This file states only how to work in this repository.
 
 ## Specification ownership
 
@@ -31,9 +28,9 @@ than all of them, and do not restate their content elsewhere.
 - Items marked `UNKNOWN`, `TO BE DECIDED`, `(assumed)`, `OQ-*` or `SQ-*` are unresolved. Do not silently
   resolve one: implement against the stated assumption and say which you relied on, or ask.
 - A change to `DESIGN.md` and the matching change to `style-guide.html` land in the same commit.
-- `DESIGN.md` sets WCAG 2.2 AA for every screen in both themes; treat it as a build requirement, not a
-  later pass.
-- `UT-10.1`: keep a fixture of 10 fake users at 10 different skill levels usable by every build step.
+- The accessibility conformance target `DESIGN.md` sets is a build requirement, not a later pass: it
+  lands with the screen, not after it.
+- Keep the `UT-10.1` fixture usable by every build step; `SEC-DATA-5` governs what may be in it.
 
 ## Workflow
 
@@ -52,15 +49,45 @@ Commands run from the repository root and delegate to the workspace.
 | Run locally | `npm run dev` |
 
 - TypeScript everywhere, strict mode. Validation schemas live in `shared/` and are applied server-side
-  at the API boundary; the clients reuse them for early feedback only, never as the only check (DR-1).
+  at the API boundary; the clients may reuse them only within the limits `DR-1` sets.
 - Every requirement's acceptance criteria land as tests in the same change, including the negative and
   authorization cases `REQUIREMENT_TEMPLATE.md` requires under Test Strategy.
 - `npm ci`, lint, typecheck, test and build must pass before a PR merges.
 - Work on a branch off `main` named for the issue (`req-auth-001-session-lifetime`); never commit to
   `main` directly. One requirement per PR, PR description linking the issue and naming the `FR-`/`SEC-`
   IDs it satisfies, squash merge, delete the branch.
-- Every new dependency is justified in the PR description per `DEP-2`, with the `DEP-3`…`DEP-6` checks
-  done before it is added. Lockfile committed; CI installs frozen (`DEP-7`).
+- Every new dependency is justified in the PR description and checked against `DEP-1`…`DEP-8` in
+  `SECURITY.md` before it is added.
 - Changes to auth, sessions, authorization, input handling, data protection or any trust boundary need
   a human security review before merge.
 - Release process: TO BE DECIDED — no deployment target exists yet (`SQ-8`).
+
+## Enforcement
+
+`.claude/` mechanizes the rules above where it can. Each hook traces to a rule in an owning document
+and reads that document at runtime; none of them restates a requirement, a security rule or an
+architecture decision.
+
+| Rule | Mechanism |
+| --- | --- |
+| No credential, key or Terraform state written from a tool call (`SEC-SECRET-1`, `SEC-SECRET-2`) | `hooks/protect-files.sh`; `permissions.deny` in `settings.json` |
+| Audit and security logs are append-only (`SEC-LOG-4`) | `hooks/protect-files.sh` |
+| Development-tool audit trail, modelled on `SEC-LOG-2` and redacted per `SEC-LOG-3` | `hooks/audit.sh` |
+| Code enters this project reviewed, never piped in (`SEC-SECRET-1`, `DEP-*`) | `hooks/block-dangerous.sh` |
+| Destructive shell, git, privilege and infrastructure commands | `hooks/block-dangerous.sh` — operational safety chosen here, not derived from a specification |
+| A change is audited against the specs and `SEC-*`/`DEP-*` before a PR | `agents/spec-auditor.md`, `agents/security-reviewer.md`, invoked by `commands/next-issue.md` |
+| Issues follow `REQUIREMENT_TEMPLATE.md`; acceptance criteria land as tests first | `commands/next-issue.md` steps 1 and 4 |
+
+Not mechanically enforced, and why:
+
+- **`npm ci`, lint, typecheck, test and build pass before merge.** `hooks/run-tests.sh` is a documented
+  placeholder: no `package.json`, runner or CI system exists yet. Enable it with the first workspace,
+  and move the full gate into CI when the CI system is chosen (`SQ-8`).
+- **Never commit to `main`; `DESIGN.md` and `style-guide.html` land in the same commit.** Both are
+  checkable in a `PreToolUse` hook on `git commit`, but no such hook exists yet. Until one does, these
+  hold by convention and at review.
+- **Human security review for changes to auth, sessions, authorization, input handling, data protection
+  or any trust boundary.** A human gate by definition; `agents/security-reviewer.md` prepares it but
+  does not replace it.
+- **A fact belongs to exactly one document.** Judgement, not a pattern — `agents/spec-auditor.md`
+  reports duplication it sees, but nothing blocks on it.

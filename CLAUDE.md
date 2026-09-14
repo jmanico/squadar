@@ -37,5 +37,30 @@ than all of them, and do not restate their content elsewhere.
 
 ## Workflow
 
-- Build, test, lint and run commands: TO BE DECIDED — add them here once they exist. Do not invent them.
-- Branching, PR, review and release process: TO BE DECIDED.
+Chosen here, not stated by the specs. An npm workspaces monorepo — `api/` (Node.js), `web/` (React),
+`mobile/` (React Native), `shared/` (types and validation used by all three), `infra/` (Terraform).
+Commands run from the repository root and delegate to the workspace.
+
+| Task | Command |
+| --- | --- |
+| Install | `npm ci` |
+| Build | `npm run build` |
+| Test | `npm test` — `npm test -w api` for one workspace |
+| Single test | `npm test -w api -- <path-or-name-pattern>` |
+| Lint and format | `npm run lint` / `npm run format` |
+| Types | `npm run typecheck` |
+| Run locally | `npm run dev` |
+
+- TypeScript everywhere, strict mode. Validation schemas live in `shared/` and are applied server-side
+  at the API boundary; the clients reuse them for early feedback only, never as the only check (DR-1).
+- Every requirement's acceptance criteria land as tests in the same change, including the negative and
+  authorization cases `REQUIREMENT_TEMPLATE.md` requires under Test Strategy.
+- `npm ci`, lint, typecheck, test and build must pass before a PR merges.
+- Work on a branch off `main` named for the issue (`req-auth-001-session-lifetime`); never commit to
+  `main` directly. One requirement per PR, PR description linking the issue and naming the `FR-`/`SEC-`
+  IDs it satisfies, squash merge, delete the branch.
+- Every new dependency is justified in the PR description per `DEP-2`, with the `DEP-3`…`DEP-6` checks
+  done before it is added. Lockfile committed; CI installs frozen (`DEP-7`).
+- Changes to auth, sessions, authorization, input handling, data protection or any trust boundary need
+  a human security review before merge.
+- Release process: TO BE DECIDED — no deployment target exists yet (`SQ-8`).
